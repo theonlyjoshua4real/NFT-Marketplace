@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Color variables for light and dark mode */
+:root {
+  --bg-main: #fff;
+  --text-main: #181A20;
+  --accent: #7c3aed; /* purple-600 */
+  --sidebar-bg: #f4f4f5; /* zinc-100 */
+  --sidebar-item-bg: #e5e7eb; /* zinc-200 */
+  --sidebar-border: #e5e7eb; /* zinc-200 */
+}
+.dark {
+  --bg-main: #181A20;
+  --text-main: #fff;
+  --accent: #a78bfa; /* purple-400 for dark */
+  --sidebar-bg: #181A20;
+  --sidebar-item-bg: #27272a; /* zinc-800 */
+  --sidebar-border: #27272a; /* zinc-800 */
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* Hide scrollbar but allow scrolling */
+.custom-scrollbar::-webkit-scrollbar { display: none; }
+.custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
