@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home';
@@ -20,21 +21,23 @@ function App() {
     window.scrollTo(0,0)}, [location.pathname]
   )
   return (
-    <div>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/terms" element={<TermsOfService />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/collection" element={<Collection />} />
-        <Route path="/nft" element={<ViewNft />} />
-        <Route path="/user-create" element={<UserUpload />} />
-        {/* Add more routes here as needed */}
-      </Routes>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/collection" element={<Collection />} />
+          <Route path="/nft" element={<ViewNft />} />
+          <Route path="/user-create" element={<UserUpload />} />
+          {/* Add more routes here as needed */}
+        </Routes>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
 

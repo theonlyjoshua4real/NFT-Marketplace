@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { WalletIcon, SunIcon, MoonIcon, MagnifyingGlassIcon, UserCircleIcon, ArrowRightOnRectangleIcon, UserPlusIcon, RectangleStackIcon, Squares2X2Icon, UserIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
 import {images} from '../../assets/images/images'
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -16,7 +17,8 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: Replace with real auth logic
+  const { user, logout, isAuthenticated } = useAuth();
+
   // Close dropdown on click outside
   React.useEffect(() => {
     function handleClick(e) {
@@ -41,6 +43,11 @@ export default function Navbar() {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  const handleLogout = () => {
+    logout();
+    setProfileMenuOpen(false);
+  };
 
   return (
     <nav className="w-full sticky top-0 z-50 border-b border-brand-navy/20 bg-white/70 dark:bg-brand-dark/80 backdrop-blur-md shadow-md px-6 py-4 font-sans">
@@ -123,7 +130,7 @@ export default function Navbar() {
                 style={{ transitionProperty: 'transform, opacity' }}
               >
                 <div className={`transition-all duration-200 ${profileMenuOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                {!isLoggedIn ? (
+                {!isAuthenticated ? (
                   <>
                     <Link to="/register" className="flex items-center gap-2 px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale">
                       <UserPlusIcon className="w-5 h-5" /> Register
@@ -134,6 +141,14 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
+                    <div className="px-4 py-2 border-b border-brand-navy/10 dark:border-brand-pale/10">
+                      <div className="text-sm font-medium text-brand-navy dark:text-brand-pale">
+                        {user?.name || user?.email || 'User'}
+                      </div>
+                      <div className="text-xs text-brand-navy/60 dark:text-brand-pale/60">
+                        {user?.email}
+                      </div>
+                    </div>
                     <Link to="/my-nfts" className="flex items-center gap-2 px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale">
                       <RectangleStackIcon className="w-5 h-5" /> My NFTs
                     </Link>
@@ -144,7 +159,7 @@ export default function Navbar() {
                       <UserIcon className="w-5 h-5" /> Profile
                     </Link>
                     <button
-                      onClick={() => { setIsLoggedIn(false); setProfileMenuOpen(false); }}
+                      onClick={handleLogout}
                       className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale"
                     >
                       <ArrowLeftOnRectangleIcon className="w-5 h-5" /> Logout
@@ -226,7 +241,7 @@ export default function Navbar() {
                     style={{ transitionProperty: 'transform, opacity' }}
                   >
                     <div className={`transition-all duration-200 ${profileMenuOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                    {!isLoggedIn ? (
+                    {!isAuthenticated ? (
                       <>
                         <Link to="/register" className="flex items-center gap-2 px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale">
                           <UserPlusIcon className="w-5 h-5" /> Register
@@ -237,6 +252,14 @@ export default function Navbar() {
                       </>
                     ) : (
                       <>
+                        <div className="px-4 py-2 border-b border-brand-navy/10 dark:border-brand-pale/10">
+                          <div className="text-sm font-medium text-brand-navy dark:text-brand-pale">
+                            {user?.name || user?.email || 'User'}
+                          </div>
+                          <div className="text-xs text-brand-navy/60 dark:text-brand-pale/60">
+                            {user?.email}
+                          </div>
+                        </div>
                         <Link to="/my-nfts" className="flex items-center gap-2 px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale">
                           <RectangleStackIcon className="w-5 h-5" /> My NFTs
                         </Link>
@@ -247,7 +270,7 @@ export default function Navbar() {
                           <UserIcon className="w-5 h-5" /> Profile
                         </Link>
                         <button
-                          onClick={() => { setIsLoggedIn(false); setProfileMenuOpen(false); }}
+                          onClick={handleLogout}
                           className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-brand-pale dark:hover:bg-brand-navy text-brand-navy dark:text-brand-pale"
                         >
                           <ArrowLeftOnRectangleIcon className="w-5 h-5" /> Logout

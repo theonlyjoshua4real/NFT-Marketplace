@@ -1,7 +1,9 @@
+import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import {images} from '../assets/images/images'
+import { useNavigate } from "react-router-dom";
 
 const carouselImages = [
   // Replace with your NFT or brand images
@@ -19,6 +21,7 @@ export default function Register() {
   // Form state
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,7 +39,7 @@ export default function Register() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Basic validation
     if (!form.name || !form.email || !form.password || !form.confirm) {
@@ -55,8 +58,32 @@ export default function Register() {
       setError("Passwords do not match.");
       return;
     }
-    // TODO: Handle registration logic
-    alert("Registered successfully! (Demo)");
+
+    try {
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, {
+      name: form.name,
+      email: form.email,
+      password: form.password
+    });
+
+    console.log(res.data.message);
+    setError("");
+
+    // Show success message
+    alert("Registered successfully!");
+
+    // Redirect to login after 2 seconds
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+
+    } catch (err) {
+      const msg = err.response?.data?.error || "Registration failed.";
+      setError(msg);
+
+    }
+
+    
   };
 
   return (
@@ -143,6 +170,7 @@ export default function Register() {
             Already have an account?{' '}
             <Link to="/login" className="text-brand-sky hover:underline font-semibold">Login</Link>
           </div>
+          
         </div>
       </div>
       {/* Right: Carousel */}

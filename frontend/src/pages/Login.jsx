@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import {images} from '../assets/images/images'
+import api from '../utils/axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+
 
 const carouselImages = [
   images.thumbnail1,
@@ -16,6 +20,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,8 +47,9 @@ export default function Login() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.email || !form.password) {
       setError("All fields are required.");
       return;
@@ -43,8 +58,28 @@ export default function Login() {
       setError("Please enter a valid email address.");
       return;
     }
-    // TODO: Handle login logic
-    alert("Logged in! (Demo)");
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const res = await api.post('/api/auth/login', {
+        email: form.email,
+        password: form.password
+      });
+
+      // Use AuthContext to handle login
+      login(res.data.user, res.data.token);
+      
+      // Immediate redirect
+      navigate("/");
+
+    } catch (err) {
+      const msg = err.response?.data?.error || "Login failed.";
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -80,6 +115,7 @@ export default function Login() {
                 className="w-full px-4 py-2 rounded-lg border border-brand-sky bg-brand-pale dark:bg-brand-dark text-brand-navy dark:text-brand-pale focus:outline-none focus:ring-2 focus:ring-brand-sky transition"
                 placeholder="you@email.com"
                 autoComplete="email"
+                disabled={isLoading}
               />
             </div>
             <div className="relative">
@@ -92,13 +128,20 @@ export default function Login() {
                 className="w-full px-4 py-2 rounded-lg border border-brand-sky bg-brand-pale dark:bg-brand-dark text-brand-navy dark:text-brand-pale focus:outline-none focus:ring-2 focus:ring-brand-sky transition pr-10"
                 placeholder="Password"
                 autoComplete="current-password"
+                disabled={isLoading}
               />
               <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-8 text-brand-sky focus:outline-none">
                 {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
               </button>
             </div>
             {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
-            <button type="submit" className="w-full py-3 rounded-lg bg-brand-sky hover:bg-brand-navy text-white font-bold text-lg shadow transition">Login</button>
+            <button 
+              type="submit" 
+              className={`w-full py-3 rounded-lg bg-brand-sky hover:bg-brand-navy text-white font-bold text-lg shadow transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Login'}
+            </button>
           </form>
           <div className="mt-6 text-center text-sm text-brand-navy dark:text-brand-pale">
             Don't have an account?{' '}
@@ -136,5 +179,6 @@ export default function Login() {
     </div>
   );
 }
+
 
 
